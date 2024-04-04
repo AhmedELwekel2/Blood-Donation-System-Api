@@ -6,6 +6,14 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const sendEmail = require("./../utils/email");
 
+const generateNumericCode = (length) => {
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    code += Math.floor(Math.random() * 10); // Generates a number between 0 and 9
+  }
+  return code;
+};
+
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -37,14 +45,57 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  const code = generateNumericCode(6);
+  console.log(code);
   const newUser = await User.create({
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
     role: req.body.role,
+    verificationCode: code,
+    verficationCodeExpires: Date.now() + 10 * 60000,
   });
-  createSendToken(newUser, 201, res);
+  // createSendToken(newUser, 201, res);
+
+  try {
+    await sendEmail({
+      email: newUser.email,
+      subject: "Your Verfication Code",
+      message: `your verfication code ${code} is valid for 10 mminutes`,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+
+  createSendToken(newUser, 200, res);
+});
+
+exports.verfiyEmail = catchAsync(async (req, res, next) => {
+  if (!req.user) {
+    return next(
+      new AppError("You must be logged in to be able to verfiy your account")
+    );
+  }
+
+  verificationCode = req.body.verificationCode;
+  // console.log(verficationCode);
+  const user = await User.findOne({
+    verificationCode: verificationCode,
+    verficationCodeExpires: { $gt: Date.now() },
+  });
+  if (user.validate == true) {
+    return next(new AppError("the account is already verfied !"));
+  }
+  console.log();
+  if (!user) {
+    return next(new AppError("The verfication code is invalid or has expired"));
+  }
+
+  user.validate = true;
+  await user.save({ validateBeforeSave: false });
+
+  res.status(300).json("congrats now your Account  is verfied ");
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -129,12 +180,13 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // 2) Generate the random reset token
   const resetToken = user.createPasswordResetToken();
+  // const passwordResetCode=generateNumericCode(6)
   await user.save({ validateBeforeSave: false });
 
   // 3) Send it to user's email
   const resetURL = `${req.protocol}://${req.get(
     "host"
-  )}/api/v1/users/resetPassword/${resetToken}`;
+  )}/api/user/resetPassword/${resetToken}`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
@@ -167,7 +219,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash("sha256")
     .update(req.params.token)
     .digest("hex");
-
+  console.log(req.params.token);
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
@@ -178,7 +230,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     return next(new AppError("Token is invalid or has expired", 400));
   }
   user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
+  user.confirmPassword = req.body.confirmPassword;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
@@ -199,7 +251,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   // 3) If so, update password
   user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
+  user.confirmPassword = req.body.confirmPassword;
   await user.save();
   // User.findByIdAndUpdate will NOT work as intended!
 
