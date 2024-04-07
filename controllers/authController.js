@@ -5,7 +5,7 @@ const User = require("./../models/User");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const sendEmail = require("./../utils/email");
-
+const geocoder = require("../utils/nodeGeocoder");
 const generateNumericCode = (length) => {
   let code = "";
   for (let i = 0; i < length; i++) {
@@ -46,7 +46,16 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   const code = generateNumericCode(6);
-  console.log(code);
+  const address = req.body.address;
+  const country = req.body.country;
+  location = await geocoder.geocode({
+    address,
+    country,
+  });
+  console.log(location[0].longitude);
+
+  // console.log(location);
+  // console.log(code);
   const newUser = await User.create({
     username: req.body.username,
     email: req.body.email,
@@ -55,6 +64,13 @@ exports.signup = catchAsync(async (req, res, next) => {
     role: req.body.role,
     verificationCode: code,
     verficationCodeExpires: Date.now() + 10 * 60000,
+    // address,
+    country,
+    location: {
+      coordinates: [location[0].longitude, location[0].latitude],
+      address,
+    },
+    // location,
   });
   // createSendToken(newUser, 201, res);
 
@@ -178,17 +194,13 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     return next(new AppError("There is no user with email address.", 404));
   }
 
-  // 2) Generate the random reset token
-  const resetToken = user.createPasswordResetToken();
-  // const passwordResetCode=generateNumericCode(6)
+  const resetCode = generateNumericCode(6);
+
+  user.resetCode = resetCode;
+  user.resetCodeExpires = Date.now() + 10 * 60000;
   await user.save({ validateBeforeSave: false });
 
-  // 3) Send it to user's email
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/user/resetPassword/${resetToken}`;
-
-  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+  const message = `Your Reset Password code is ${resetCode} is valid for 10 minutes `;
 
   try {
     await sendEmail({
@@ -199,11 +211,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "Token sent to email!",
+      message: "reset Code sent to email!",
     });
   } catch (err) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+    user.resetCode = undefined;
+    user.resetCodeExpires = undefined;
     await user.save({ validateBeforeSave: false });
 
     return next(
@@ -214,25 +226,20 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-  // 1) Get user based on the token
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(req.params.token)
-    .digest("hex");
-  console.log(req.params.token);
+  resetCode = req.body.resetCode;
   const user = await User.findOne({
-    passwordResetToken: hashedToken,
-    passwordResetExpires: { $gt: Date.now() },
+    resetCode,
+    resetCodeExpires: { $gt: Date.now() },
   });
 
   // 2) If token has not expired, and there is user, set the new password
   if (!user) {
-    return next(new AppError("Token is invalid or has expired", 400));
+    return next(new AppError("reset code is invalid or has expired", 400));
   }
   user.password = req.body.password;
   user.confirmPassword = req.body.confirmPassword;
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
+  user.resetCode = undefined;
+  user.resetCodeExpires = undefined;
   await user.save();
 
   // 3) Update changedPasswordAt property for the user
