@@ -6,7 +6,7 @@ const requestSchema = mongoose.Schema({
   status: {
     type: String,
     enum: ["accepted", "denied", "suspended"],
-    default: "suspended ",
+    default: "suspended",
   },
 
   doner: {
@@ -22,10 +22,12 @@ const requestSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: User,
   },
+  donationCheck: {
+    type: String,
+    default: "in progress",
+  },
 });
 
 const Request = mongoose.model("Request", requestSchema);
 
 module.exports = Request;
-
-

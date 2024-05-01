@@ -39,22 +39,20 @@ const userSchema = mongoose.Schema({
     type: [String],
   },
 
-  location: [
-    {
-      type: {
-        type: String,
-        default: "Point",
-        enum: ["Point"],
-      },
-      coordinates: [Number],
-      address: {
-        type: String,
-        required: [true, "you must provide an adrees"],
-      },
-      description: String,
-      day: Number,
+  location: {
+    type: {
+      type: String,
+      default: "Point",
+      enum: ["Point"],
     },
-  ],
+    coordinates: [Number],
+    address: {
+      type: String,
+      required: [true, "you must provide an adrees"],
+    },
+    description: String,
+    day: Number,
+  },
 
   bloodBankName: {
     type: String,
@@ -77,7 +75,12 @@ const userSchema = mongoose.Schema({
     type: String,
     required: [true, "you must provide a country "],
   },
+  bloodUnits: Number,
+  nationalID: Number,
+  bloodGroup: String,
 });
+
+userSchema.index({ location: "2dsphere" });
 
 userSchema.pre("save", async function (next) {
   // Only run this function if password was actually modified
