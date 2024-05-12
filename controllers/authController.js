@@ -100,9 +100,9 @@ exports.verfiyEmail = catchAsync(async (req, res, next) => {
     verificationCode: verificationCode,
     verficationCodeExpires: { $gt: Date.now() },
   });
-  if (user.validate == true) {
-    return next(new AppError("the account is already verfied !"));
-  }
+  // if (user.validate == true) {
+  //   return next(new AppError("the account is already verfied !"));
+  // }
   console.log();
   if (!user) {
     return next(new AppError("The verfication code is invalid or has expired"));
