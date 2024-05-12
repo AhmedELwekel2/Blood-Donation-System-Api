@@ -96,10 +96,13 @@ exports.updateDonationCheck = catchAsync(async (req, res, next) => {
     );
 });
 
-// to make the doner getting the accepted requests from doners
+// to make the patient getting the accepted requests from doners
 
 exports.getAcceptedRequests = catchAsync(async (req, res, next) => {
-  acceptedRequest = await Request.find({ status: "accepted" });
+  acceptedRequest = await Request.find({
+    status: "accepted",
+    patient: req.user._id,
+  });
 
   res.status(300).json(acceptedRequest);
 });
