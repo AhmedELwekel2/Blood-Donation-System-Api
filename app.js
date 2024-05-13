@@ -8,6 +8,8 @@ const mongoose = require("mongoose");
 
 const app = express();
 
+const cookieParser = require("cookie-parser");
+
 const port = 3000;
 
 const globalErrorHandler = require("./controllers/errorController");
@@ -15,6 +17,7 @@ const globalErrorHandler = require("./controllers/errorController");
 var bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 const userRouter = require("./routes/userRouter");
 
@@ -33,11 +36,10 @@ app.get("/", (req, res) => {
 
 app.use("/api/user", userRouter);
 
-app.use(globalErrorHandler);
-
 mongoose.connect(db).then(() => {
   console.log("DB connection succesfuly");
 });
+app.use(globalErrorHandler);
 
 app.listen(port, () => {
   console.log(`app listen in port ${port}`);
