@@ -23,6 +23,10 @@ const donationCampSchema = mongoose.Schema({
   date: {
     type: Date,
   },
+  name: {
+    unique: true,
+    type: String,
+  },
 });
 
 const DonationCamp = mongoose.model("DonationCamp", donationCampSchema);

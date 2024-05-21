@@ -48,6 +48,12 @@ exports.signup = catchAsync(async (req, res, next) => {
   const code = generateNumericCode(6);
   const address = req.body.address;
   const country = req.body.country;
+  const role =
+    req.body.role == "doner" ||
+    req.body.role == "bloodBank" ||
+    req.body.role == "admin"
+      ? req.body.role
+      : "patient";
   location = await geocoder.geocode({
     address,
     country,
@@ -61,7 +67,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    role: req.body.role,
+    role: role,
     verificationCode: code,
     verficationCodeExpires: Date.now() + 10 * 60000,
     // address,
@@ -272,3 +278,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // 4) Log user in, send JWT
   createSendToken(user, 200, res);
 });
+
+exports.createAdmin = catchAsync((req, res, next) => {});

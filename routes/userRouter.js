@@ -43,7 +43,7 @@ userRouter.post(
   userController.createRequestForm
 );
 userRouter.post(
-  "/doner/updateRequest/:id",
+  "/doner/updateRequest/:requestId/:status",
   authController.protect,
   authController.restrictTo("doner"),
   userController.updateRequest
@@ -57,9 +57,28 @@ userRouter.post(
 );
 
 userRouter.get(
-  "/patient/acceptedRequests",
+  "/patient/acceptedRequests/",
   authController.protect,
   authController.restrictTo("patient"),
   userController.getAcceptedRequests
+);
+userRouter.post(
+  "/admin/verfiyBloodBank/:id",
+  authController.protect,
+  authController.restrictTo("admin"),
+  userController.verfiyBloodBank
+);
+userRouter.post(
+  "/bloodBank/createDonationCamp",
+  authController.protect,
+  authController.restrictTo("bloodBank"),
+  userController.createDonationCamp
+);
+
+userRouter.get(
+  "/bloodBank/acceptedRequests/:donationCamp",
+  authController.protect,
+  authController.restrictTo("bloodBank"),
+  userController.getAcceptedRequestsDonationCamp
 );
 module.exports = userRouter;

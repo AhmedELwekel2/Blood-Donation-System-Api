@@ -31,7 +31,7 @@ const userSchema = mongoose.Schema({
 
   role: {
     type: String,
-    enum: ["patient", "doner", "admin", "blood bank"],
+    enum: ["patient", "doner", "admin", "bloodBank"],
     default: "patient",
   },
 
@@ -78,6 +78,14 @@ const userSchema = mongoose.Schema({
   bloodUnits: Number,
   nationalID: Number,
   bloodGroup: String,
+  valideBloodBank: {
+    type: Boolean,
+    default: false,
+  },
+  donationDate: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 userSchema.index({ location: "2dsphere" });
