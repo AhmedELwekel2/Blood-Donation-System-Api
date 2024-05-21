@@ -304,7 +304,7 @@ exports.getAcceptedRequestsDonationCamp = catchAsync(async (req, res, next) => {
   acceptedRequest = await Request.find({
     status: "accepted",
     bloodBank: req.user._id,
-    donationCamp: req.params.donationCamp,
+    name: req.params.donationCamp,
   });
   return res.status(300).json(acceptedRequest);
 });
