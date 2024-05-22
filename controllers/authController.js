@@ -49,7 +49,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   const address = req.body.address;
   const country = req.body.country;
   const role =
-    req.body.role == "doner" ||
+    req.body.role == "donor" ||
     req.body.role == "bloodBank" ||
     req.body.role == "admin"
       ? req.body.role

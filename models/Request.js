@@ -9,7 +9,7 @@ const requestSchema = mongoose.Schema({
     default: "suspended",
   },
 
-  doner: {
+  donor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: User,
   },

@@ -3,10 +3,10 @@ const authController = require("./../controllers/authController");
 const userRouter = express.Router();
 const userController = require("./../controllers/userController");
 userRouter.get(
-  "/patient/searchNearestDoners",
+  "/patient/searchNearestDonors",
   authController.protect,
   authController.restrictTo("patient"),
-  userController.searchNearestDoners
+  userController.searchNearestDonors
 );
 
 userRouter.post("/signup", authController.signup);
@@ -23,16 +23,16 @@ userRouter.post("/forgotPassword", authController.forgotPassword);
 userRouter.post("/resetPassword", authController.resetPassword);
 
 userRouter.post(
-  "/patient/requestDonations/:donersId",
+  "/patient/requestDonations/:donorsId",
   authController.protect,
   authController.restrictTo("patient"),
   userController.createDonationRequest
 );
 
 userRouter.get(
-  "/doner/sentedRequests",
+  "/donor/sentedRequests",
   authController.protect,
-  authController.restrictTo("doner"),
+  authController.restrictTo("donor"),
   userController.sentedRequests
 );
 
@@ -43,16 +43,16 @@ userRouter.post(
   userController.createRequestForm
 );
 userRouter.post(
-  "/doner/updateRequest/:requestId/:status",
+  "/donor/updateRequest/:requestId/:status",
   authController.protect,
-  authController.restrictTo("doner"),
+  authController.restrictTo("donor"),
   userController.updateRequest
 );
 
 userRouter.post(
-  "/doner/updateDonationCheck/:id",
+  "/donor/updateDonationCheck/:id",
   authController.protect,
-  authController.restrictTo("doner"),
+  authController.restrictTo("donor"),
   userController.updateDonationCheck
 );
 

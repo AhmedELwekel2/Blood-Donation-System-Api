@@ -6,9 +6,9 @@ const DonationCamp = require("./../models/DonationCamp");
 const geocoder = require("../utils/nodeGeocoder");
 
 //  endpoint (Get) for the user with role patient with the help of restrict to middleware and geospatial query
-// to search for the nearest user with role doner
+// to search for the nearest user with role donor
 
-exports.searchNearestDoners = catchAsync(async (req, res, next) => {
+exports.searchNearestDonors = catchAsync(async (req, res, next) => {
   const coordinates = req.user.location.coordinates;
   const maxDistance = req.body.maxDistance;
   // console.log(req.user.location);
@@ -23,18 +23,18 @@ exports.searchNearestDoners = catchAsync(async (req, res, next) => {
         $maxDistance: maxDistance, // in meters
       },
     },
-    role: "doner",
+    role: "donor",
   };
 
-  const nearestDoners = await User.find(query).select([
+  const nearestDonors = await User.find(query).select([
     "email",
     "role",
     "location",
   ]);
 
-  res.status(300).json({ nearestDoners: nearestDoners });
+  res.status(300).json({ nearestDonors: nearestDonors });
 
-  // const nearestDoners = User.find({
+  // const nearestDonors = User.find({
   //   location:
   // });
 });
@@ -53,31 +53,31 @@ exports.createRequestForm = catchAsync(async (req, res, next) => {
   res.status(300).json("thanks for entering Your informations ");
 });
 
-//endpoint to create (Post) request to the doner in the nearest location that you got from the first endpoint you created
+//endpoint to create (Post) request to the donor in the nearest location that you got from the first endpoint you created
 exports.createDonationRequest = catchAsync(async (req, res, next) => {
-  const ids = req.params.donersId.split(" ");
-  // to update the blood  units the patient needs from doners
+  const ids = req.params.donorsId.split(" ");
+  // to update the blood  units the patient needs from donors
   // await User.updateOne(
   //   { _id: req.user._id },
   //   { bloodUnits: req.body.bloodUnits }
   // );
-  // to create request for doners you choose based on your searching
+  // to create request for donors you choose based on your searching
   for (let i = 0; i < ids.length; i++) {
     const request = await Request.create({
       patient: req.user._id,
-      doner: ids[i],
+      donor: ids[i],
     });
   }
   res.status(300).json("You Succeffuly Sent Donations Requests");
 });
-// endpoint to get the requests sends to the doner so he could accept or refuse
+// endpoint to get the requests sends to the donor so he could accept or refuse
 exports.sentedRequests = catchAsync(async (req, res, next) => {
-  const sentedRequests = await Request.find({ doner: req.user._id });
+  const sentedRequests = await Request.find({ donor: req.user._id });
   console.log(sentedRequests);
 
   res.status(300).json(sentedRequests);
 });
-//endpoint to make the doner accept or refuse the request
+//endpoint to make the donor accept or refuse the request
 // exports.updateRequest = catchAsync(async (req, res, next) => {
 //   if (req.body.status == "accepted") {
 //     const patient = await User.find({ _id: req.params.userId });
@@ -97,7 +97,7 @@ exports.sentedRequests = catchAsync(async (req, res, next) => {
 //       );
 //     } else {
 //       return res.status(
-//         "Thanks For Accepting the request but it is no longer needed since the patient get the donations from other doners"
+//         "Thanks For Accepting the request but it is no longer needed since the patient get the donations from other donors"
 //       );
 //     }
 //   }
@@ -107,7 +107,7 @@ exports.sentedRequests = catchAsync(async (req, res, next) => {
 //   );
 //   return res.status(300).json("Thanks for updating Your Request status ");
 // });
-// to make the doner entering the donation check
+// to make the donor entering the donation check
 
 exports.updateRequest = catchAsync(async (req, res, next) => {
   // const { userId, requestId } = req.params;
@@ -207,7 +207,7 @@ exports.updateDonationCheck = catchAsync(async (req, res, next) => {
     );
 });
 
-// to make the patient getting the accepted requests from doners
+// to make the patient getting the accepted requests from donors
 
 exports.getAcceptedRequests = catchAsync(async (req, res, next) => {
   //when dealing with patient donor
@@ -255,7 +255,7 @@ exports.createDonationCamp = catchAsync(async (req, res, next) => {
     country,
   });
   coordinates = [location[0].longitude, location[0].latitude];
-  // query searching the nearest doners
+  // query searching the nearest donors
   console.log(coordinates);
   const query = {
     location: {
@@ -267,7 +267,7 @@ exports.createDonationCamp = catchAsync(async (req, res, next) => {
         $maxDistance: 10000000, // in meters
       },
     },
-    role: "doner",
+    role: "donor",
   };
   // 1-create the donation camp
   const newDonationCamp = await DonationCamp.create({
@@ -277,19 +277,19 @@ exports.createDonationCamp = catchAsync(async (req, res, next) => {
     date: new Date(year, month - 1, day),
   });
 
-  // 2-search nearest doners
-  const nearestDoners = await User.find(query).select([
+  // 2-search nearest donors
+  const nearestDonors = await User.find(query).select([
     "email",
     "role",
     "location",
     "name",
   ]);
-  console.log(nearestDoners);
-  // 3- sending requests to the nearest doners
-  for (let i = 0; i < nearestDoners.length; i++) {
+  console.log(nearestDonors);
+  // 3- sending requests to the nearest donors
+  for (let i = 0; i < nearestDonors.length; i++) {
     await Request.create({
       donationcamp: newDonationCamp._id,
-      doner: nearestDoners[i],
+      donor: nearestDonors[i],
     });
   }
 
