@@ -2,7 +2,7 @@ const express = require("express");
 const authController = require("./../controllers/authController");
 const userRouter = express.Router();
 const userController = require("./../controllers/userController");
-userRouter.get(
+userRouter.post(
   "/patient/searchNearestDonors",
   authController.protect,
   authController.restrictTo("patient"),
@@ -36,12 +36,12 @@ userRouter.get(
   userController.sentedRequests
 );
 
-userRouter.post(
-  "/patient/createRequestForm",
-  authController.protect,
-  authController.restrictTo("patient"),
-  userController.createRequestForm
-);
+// userRouter.post(
+//   "/patient/createRequestForm",
+//   authController.protect,
+//   authController.restrictTo("patient"),
+//   userController.createRequestForm
+// );
 userRouter.post(
   "/donor/updateRequest/:requestId/:status",
   authController.protect,
@@ -80,5 +80,12 @@ userRouter.get(
   authController.protect,
   authController.restrictTo("bloodBank"),
   userController.getAcceptedRequestsDonationCamp
+);
+
+userRouter.get(
+  "/bloodBank/getDonationCamps",
+  authController.protect,
+  authController.restrictTo("bloodBank"),
+  userController.getDonationCamps
 );
 module.exports = userRouter;

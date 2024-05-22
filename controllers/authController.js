@@ -188,8 +188,8 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     // roles ['admin', 'lead-guide']. role='user'
-    console.log(req.user.role);
-    console.log(roles);
+    // console.log(req.user.role);
+    // console.log(roles);
 
     if (!roles.includes(req.user.role)) {
       return next(

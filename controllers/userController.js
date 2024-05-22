@@ -9,8 +9,31 @@ const geocoder = require("../utils/nodeGeocoder");
 // to search for the nearest user with role donor
 
 exports.searchNearestDonors = catchAsync(async (req, res, next) => {
-  const coordinates = req.user.location.coordinates;
-  const maxDistance = req.body.maxDistance;
+  // 1-dealing with the request form
+
+  const address = req.body.hospitalAddress;
+  const name = req.body.hospitalName;
+  const country = req.body.country || "egypt";
+
+  const location = await geocoder.geocode({
+    address,
+    country,
+  });
+  const coordinates = [location[0].longitude, location[0].latitude];
+  await User.updateOne(
+    { _id: req.user._id },
+    {
+      bloodUnits: req.body.bloodUnits,
+      nationalID: req.body.nationalID,
+      bloodGroup: req.body.bloodGroup,
+      hospital: { coordinates, name, address },
+    }
+  );
+
+  // filter the nearest doners based on the informations from the request form
+
+  // const coordinates = req.user.location.coordinates;
+  const maxDistance = req.body.maxDistance || 10000000;
   // console.log(req.user.location);
   // console.log(coordinates);
   const query = {
@@ -41,17 +64,17 @@ exports.searchNearestDonors = catchAsync(async (req, res, next) => {
 
 // endpoint for creating a request form // to update information about the patient in the database
 
-exports.createRequestForm = catchAsync(async (req, res, next) => {
-  await User.updateOne(
-    { _id: req.user._id },
-    {
-      bloodUnits: req.body.bloodUnits,
-      nationalID: req.body.nationalID,
-      bloodGroup: req.body.bloodGroup,
-    }
-  );
-  res.status(300).json("thanks for entering Your informations ");
-});
+// exports.createRequestForm = catchAsync(async (req, res, next) => {
+//   await User.updateOne(
+//     { _id: req.user._id },
+//     {
+//       bloodUnits: req.body.bloodUnits,
+//       nationalID: req.body.nationalID,
+//       bloodGroup: req.body.bloodGroup,
+//     }
+//   );
+//   res.status(300).json("thanks for entering Your informations ");
+// });
 
 //endpoint to create (Post) request to the donor in the nearest location that you got from the first endpoint you created
 exports.createDonationRequest = catchAsync(async (req, res, next) => {
@@ -303,8 +326,14 @@ exports.createDonationCamp = catchAsync(async (req, res, next) => {
 exports.getAcceptedRequestsDonationCamp = catchAsync(async (req, res, next) => {
   acceptedRequest = await Request.find({
     status: "accepted",
-    bloodBank: req.user._id,
-    name: req.params.donationCamp,
+    donationCamp: req.params.donationCamp,
   });
+  // console.log(acceptedRequest);
   return res.status(300).json(acceptedRequest);
+});
+
+exports.getDonationCamps = catchAsync(async (req, res, next) => {
+  // find donation camps created by the blood bank
+  const donationCamps = await DonationCamp.find({ bloodBank: req.user._id });
+  res.status(300).json(donationCamps);
 });

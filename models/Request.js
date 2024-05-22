@@ -18,7 +18,7 @@ const requestSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: User,
   },
-  donationcamp: {
+  donationCamp: {
     type: mongoose.Schema.Types.ObjectId,
     ref: User,
   },

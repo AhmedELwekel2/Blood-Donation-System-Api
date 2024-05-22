@@ -86,6 +86,19 @@ const userSchema = mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  hospital: {
+    type: {
+      type: String,
+      default: "Point",
+      enum: ["Point"],
+    },
+    coordinates: [Number],
+    address: {
+      type: String,
+    },
+    name: String,
+    day: Number,
+  },
 });
 
 userSchema.index({ location: "2dsphere" });
