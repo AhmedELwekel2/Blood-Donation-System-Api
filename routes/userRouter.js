@@ -88,4 +88,24 @@ userRouter.get(
   authController.restrictTo("bloodBank"),
   userController.getDonationCamps
 );
+userRouter.get(
+  "/doner/findNearestBloodBank",
+  authController.protect,
+  authController.restrictTo("doner"),
+  userController.findNearestBloodBank
+);
+
+userRouter.get("/getMe", authController.protect, userController.getMe);
+
+userRouter.post(
+  "/sendVerficationCode",
+  authController.protect,
+  authController.sendVerficationCode
+);
+userRouter.post(
+  "/updateRole",
+  authController.protect,
+  userController.updateRole
+);
+
 module.exports = userRouter;

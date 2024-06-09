@@ -251,6 +251,31 @@ exports.getAcceptedRequests = catchAsync(async (req, res, next) => {
   res.status(300).json(acceptedRequest);
 });
 
+/// to find the nearest blood bank in the location the doner in
+
+exports.findNearestBloodBank = catchAsync(async (req, res, next) => {
+  const coordinates = [
+    req.user.location[0].longitude,
+    req.user.location[0].latitude,
+  ];
+
+  const query = {
+    location: {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: coordinates,
+        },
+        $maxDistance: maxDistance, // in meters
+      },
+    },
+    role: "bloodBank",
+  };
+  const nearestBloodBank = await User.find(query);
+
+  res.status(300).json(nearestBloodBank);
+});
+
 ///// reamining taks the logic for the blood unit doneee
 ///// the blood bank endpoints reamining
 /////////////////////////////////// Blood Bank Endpoints //////////////////////////////
@@ -336,4 +361,16 @@ exports.getDonationCamps = catchAsync(async (req, res, next) => {
   // find donation camps created by the blood bank
   const donationCamps = await DonationCamp.find({ bloodBank: req.user._id });
   res.status(300).json(donationCamps);
+});
+// endpoint to update the role of the user
+exports.updateRole = catchAsync(async (req, res, next) => {
+  await User.updateOne({ _id: req.user._id }, { role: req.body.role });
+
+  res.status(300).json(`Your role updated to ${req.body.role}`);
+});
+
+// endpoint to get the user that logged in
+
+exports.getMe = catchAsync(async (req, res, next) => {
+  const user = await User.find({ _id: req.user._id });
 });
