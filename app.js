@@ -2,11 +2,14 @@ const path = require("path");
 
 const dotenv = require("dotenv");
 
+const cors = require("cors");
 const express = require("express");
 
 const mongoose = require("mongoose");
 
 const app = express();
+
+app.use(cors());
 
 const cookieParser = require("cookie-parser");
 
