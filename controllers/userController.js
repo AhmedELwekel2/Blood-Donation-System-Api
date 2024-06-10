@@ -78,17 +78,17 @@ exports.searchNearestDonors = catchAsync(async (req, res, next) => {
 
 //endpoint to create (Post) request to the donor in the nearest location that you got from the first endpoint you created
 exports.createDonationRequest = catchAsync(async (req, res, next) => {
-  const ids = req.params.donorsId.split(" ");
+  // const ids = req.params.donorsId.split(" ");
   // to update the blood  units the patient needs from donors
   // await User.updateOne(
   //   { _id: req.user._id },
   //   { bloodUnits: req.body.bloodUnits }
   // );
   // to create request for donors you choose based on your searching
-  for (let i = 0; i < ids.length; i++) {
+  for (let i = 0; i < req.body.doners.length; i++) {
     const request = await Request.create({
       patient: req.user._id,
-      donor: ids[i],
+      donor: req.body.doners[i],
     });
   }
   res.status(300).json("You Succeffuly Sent Donations Requests");
@@ -373,4 +373,5 @@ exports.updateRole = catchAsync(async (req, res, next) => {
 
 exports.getMe = catchAsync(async (req, res, next) => {
   const user = await User.find({ _id: req.user._id });
+  res.status(300).json(user)
 });
