@@ -96,7 +96,10 @@ exports.signup = catchAsync(async (req, res, next) => {
 // endpoint to send verficaion code if the user verfiction code expired
 exports.sendVerficationCode = catchAsync(async (req, res, next) => {
   const code = generateNumericCode(6);
-  await User.updateOne({ _id: req.user._id }, { verificationCode: code , verficationCodeExpires: Date.now() + 10 * 60000 })
+  await User.updateOne(
+    { _id: req.user._id },
+    { verificationCode: code, verficationCodeExpires: Date.now() + 10 * 60000 }
+  );
 
   await sendEmail({
     email: req.user.email,
@@ -104,8 +107,8 @@ exports.sendVerficationCode = catchAsync(async (req, res, next) => {
     message: `your verfication code ${code} is valid for 10 mminutes`,
   });
 
-  res.status(300).json('the verfication has been sent to your email ')
-
+  // console.log(req.user.email);
+  res.status(300).json("the verfication has been sent to your email ");
 });
 
 exports.verfiyEmail = catchAsync(async (req, res, next) => {

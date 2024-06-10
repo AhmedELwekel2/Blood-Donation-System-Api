@@ -9,15 +9,23 @@ const sendEmail = async (options) => {
     //   ciphers: "SSLv3",
     //   rejectUnauthorized: false,
     // },
+    // auth: {
+    //   user: process.env.EMAIL_USERNAME,
+    //   pass: process.env.EMAIL_PASSWORD,
+    // },
+    // host: "smtp.gmail.com",
+    // port: 465,
+
+    service: "gmail",
     auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS,
     },
   });
 
   // 2) Define the email options
   const mailOptions = {
-    from: "Jonas Schmedtmann <hello@jonas.io>",
+    from: "Blood Samples >",
     to: options.email,
     subject: options.subject,
     text: options.message,
