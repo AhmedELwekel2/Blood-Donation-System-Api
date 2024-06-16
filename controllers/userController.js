@@ -53,6 +53,7 @@ exports.searchNearestDonors = catchAsync(async (req, res, next) => {
     "email",
     "role",
     "location",
+    "username",
   ]);
 
   res.status(300).json({ nearestDonors: nearestDonors });
@@ -246,7 +247,9 @@ exports.getAcceptedRequests = catchAsync(async (req, res, next) => {
   acceptedRequest = await Request.find({
     status: "accepted",
     patient: req.user._id,
-  });
+  })
+    .populate("donor")
+    .populate("patient");
 
   res.status(300).json(acceptedRequest);
 });
@@ -373,5 +376,5 @@ exports.updateRole = catchAsync(async (req, res, next) => {
 
 exports.getMe = catchAsync(async (req, res, next) => {
   const user = await User.find({ _id: req.user._id });
-  res.status(300).json(user)
+  res.status(300).json(user);
 });
