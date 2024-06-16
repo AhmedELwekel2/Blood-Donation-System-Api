@@ -54,6 +54,7 @@ exports.searchNearestDonors = catchAsync(async (req, res, next) => {
     "role",
     "location",
     "username",
+    "profileImage",
   ]);
 
   res.status(300).json({ nearestDonors: nearestDonors });
@@ -248,8 +249,8 @@ exports.getAcceptedRequests = catchAsync(async (req, res, next) => {
     status: "accepted",
     patient: req.user._id,
   })
-    .populate("donor")
-    .populate("patient");
+    .populate("donor", "username location email profileImage ")
+    .populate("patient", "username location email profileImage");
 
   res.status(300).json(acceptedRequest);
 });

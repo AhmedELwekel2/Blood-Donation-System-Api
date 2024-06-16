@@ -99,6 +99,7 @@ const userSchema = mongoose.Schema({
     name: String,
     day: Number,
   },
+  profileImage: String, // This will store the path to the uploaded image
 });
 
 userSchema.index({ location: "2dsphere" });
