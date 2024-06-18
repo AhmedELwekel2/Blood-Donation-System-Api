@@ -340,7 +340,7 @@ exports.createDonationCamp = catchAsync(async (req, res, next) => {
   // 3- sending requests to the nearest donors
   for (let i = 0; i < nearestDonors.length; i++) {
     await Request.create({
-      donationcamp: newDonationCamp._id,
+      donationCamp: newDonationCamp._id,
       donor: nearestDonors[i],
     });
   }
