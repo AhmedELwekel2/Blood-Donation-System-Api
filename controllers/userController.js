@@ -139,6 +139,10 @@ exports.updateRequest = catchAsync(async (req, res, next) => {
   const requestId = req.params.requestId;
   const status = req.params.status;
   const request = await Request.find({ _id: requestId });
+
+  if (!request) {
+    return next(new AppError("Please Enter A valid Request Id"));
+  }
   const currentDate = new Date();
   currentDate.setMonth(currentDate.getMonth() + 3);
   // you deal with request from the patient to the donor
