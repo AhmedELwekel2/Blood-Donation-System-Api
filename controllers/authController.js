@@ -108,7 +108,7 @@ exports.sendVerficationCode = catchAsync(async (req, res, next) => {
   });
 
   // console.log(req.user.email);
-  res.status(300).json("the verfication has been sent to your email ");
+  res.status(300).json({message:"the verfication code has been sent to your email "});
 });
 
 exports.verfiyEmail = catchAsync(async (req, res, next) => {

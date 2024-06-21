@@ -23,7 +23,7 @@ userRouter.post("/forgotPassword", authController.forgotPassword);
 userRouter.post("/resetPassword", authController.resetPassword);
 
 userRouter.post(
-  "/patient/requestDonations/:donorsId",
+  "/patient/requestDonations",
   authController.protect,
   authController.restrictTo("patient"),
   userController.createDonationRequest

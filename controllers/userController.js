@@ -87,13 +87,13 @@ exports.createDonationRequest = catchAsync(async (req, res, next) => {
   //   { bloodUnits: req.body.bloodUnits }
   // );
   // to create request for donors you choose based on your searching
-  for (let i = 0; i < req.body.doners.length; i++) {
+  for (let i = 0; i < req.body.donors.length; i++) {
     const request = await Request.create({
       patient: req.user._id,
-      donor: req.body.doners[i],
+      donor: req.body.donors[i],
     });
   }
-  res.status(300).json("You Succeffuly Sent Donations Requests");
+  res.status(300).json({ message: "You Succeffuly Sent Donations Requests" });
 });
 // endpoint to get the requests sends to the donor so he could accept or refuse
 exports.sentedRequests = catchAsync(async (req, res, next) => {
