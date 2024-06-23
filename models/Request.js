@@ -20,7 +20,7 @@ const requestSchema = mongoose.Schema({
   },
   donationCamp: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: User,
+    ref: DonationCamp,
   },
   donationCheck: {
     type: String,
