@@ -97,9 +97,13 @@ exports.createDonationRequest = catchAsync(async (req, res, next) => {
 });
 // endpoint to get the requests sends to the donor so he could accept or refuse
 exports.sentedRequests = catchAsync(async (req, res, next) => {
-  const sentedRequests = await Request.find({ donor: req.user._id })
+  const sentedRequests = await Request.find({
+    donor: req.user._id,
+    status: "suspended",
+  })
     .populate("patient")
-    .populate("donor");
+    .populate("donor")
+    .populate("donationCamp");
   console.log(sentedRequests);
 
   res.status(300).json(sentedRequests);
