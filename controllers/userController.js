@@ -102,8 +102,8 @@ exports.sentedRequests = catchAsync(async (req, res, next) => {
     status: "suspended",
   })
     .populate("patient")
-    .populate("donor")
-    .populate("donationCamp");
+    .populate("donor");
+  // .populate("donationCamp");
   console.log(sentedRequests);
 
   res.status(300).json(sentedRequests);
