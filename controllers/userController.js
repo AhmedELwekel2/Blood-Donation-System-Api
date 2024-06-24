@@ -33,7 +33,7 @@ exports.searchNearestDonors = catchAsync(async (req, res, next) => {
   // filter the nearest doners based on the informations from the request form
 
   // const coordinates = req.user.location.coordinates;
-  const maxDistance = req.body.maxDistance || 10000000;
+  const maxDistance = req.body.maxDistance || 50000;
   // console.log(req.user.location);
   // console.log(coordinates);
   const query = {
